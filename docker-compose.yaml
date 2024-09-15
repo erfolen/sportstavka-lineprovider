@@ -1,0 +1,18 @@
+services:
+  # База данных line-provider
+  db_line-provider:
+    image: postgres:13.8
+    container_name: db_line-provider
+    environment:
+      POSTGRES_HOST: db_line-provider
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ./pgdata_lp:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+      interval: 30s
+      retries: 5
+      timeout: 5s
