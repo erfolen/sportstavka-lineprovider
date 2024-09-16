@@ -13,7 +13,7 @@ class StatusEvent(enum.Enum):
     FINISHED_LOSE = 'finished_lose'
 
 
-class Event(Base):
+class EventBD(Base):
     """События ставок."""
     __tablename__ = 'event'
 
