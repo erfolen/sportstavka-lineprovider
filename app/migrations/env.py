@@ -7,7 +7,7 @@ from alembic import context
 
 from config import data_base_url
 from app.database import Base
-from app.model import Event  # noqa
+from app.model import EventBD  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,15 +1,20 @@
 import decimal
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
-from model import StatusEvent
+from app.model import StatusEvent
 
 class SEvent(BaseModel):
-    event_id: str
+    event_id: Optional[str] = None
     coefficient: decimal.Decimal = Field(ge=0)
     deadline: datetime
     state: StatusEvent
 
-# class SevenResponse(SEvent):
-#     status: 200
-#     data: "Событие создано"
+    class Config:
+        from_attributes = True
+
+class SEventState(BaseModel):
+    event_id: str
+    state: StatusEvent

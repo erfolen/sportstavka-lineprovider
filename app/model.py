@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Numeric, CheckConstraint, TIMESTAMP
+from sqlalchemy import Numeric, CheckConstraint, TIMESTAMP, UUID
 
 from app.database import Base
 
