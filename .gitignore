@@ -8,7 +8,8 @@ gen
 .env
 venv
 .venv
-
+pgdata_lp/
+pgdata_test_lp/
 
 # Temp folders
 .pytest_cache
