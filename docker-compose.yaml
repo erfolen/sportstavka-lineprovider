@@ -16,3 +16,28 @@ services:
       interval: 30s
       retries: 5
       timeout: 5s
+    profiles:
+      - line-provider
+      - both
+
+
+  # Тестовая база данных
+  test-database:
+    image: postgres:13.8
+    container_name: test-database_lp
+    environment:
+      POSTGRES_HOST: test-database_lp
+    env_file:
+      - .env
+    ports:
+      - "${TEST_POSTGRES_PORT}:5433"
+    volumes:
+      - ./pgdata_test_lp:/var/lib/postgresql/data  # Том для тестовой базы
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d ${TEST_POSTGRES_DB} -U ${TEST_POSTGRES_USER}" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    profiles:
+      - test
+      - both
