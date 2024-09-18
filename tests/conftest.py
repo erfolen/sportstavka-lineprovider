@@ -4,13 +4,14 @@ from typing import AsyncGenerator
 
 import pytest
 from httpx import AsyncClient
+from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import (create_async_engine, async_sessionmaker,
                                     AsyncSession)
 
 from config import data_test_base_url
-from app.migrations.env import target_metadata
+from app.model import EventBD  # noqa
 from app.main import app
-from app.database import async_session_fabric
+from app.database import async_session_fabric, Base
 
 # DATABASE
 async_test_engine = create_async_engine(data_test_base_url(), future=True,
@@ -19,7 +20,7 @@ async_test_session_fabric = async_sessionmaker(async_test_engine,
                                                class_=AsyncSession,
                                                expire_on_commit=False)
 
-target_metadata.bind = async_test_engine
+Base.metadata.bind = async_test_engine
 
 
 async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
@@ -30,28 +31,26 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
 app.dependency_overrides[async_session_fabric] = override_get_async_session
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    """Управлять сессиями в тестах."""
-    async with async_test_session_fabric() as session:
-        yield session
-
 @pytest.fixture(autouse=True, scope='session')
-async def prepare_database():
+async def db_session():
     async with async_test_engine.begin() as conn:
-        await conn.run_sync(target_metadata.create_all)
-    yield
-    async with async_test_engine.begin() as conn:
-        await conn.run_sync(target_metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all(bind=async_test_engine))
+    yield async_test_session_fabric()
+    # async with async_test_engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all(bind=async_test_engine))
+
 
 # SETUP
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def event_loop(request):
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
-@pytest.fixture(scope="session")
+# client = TestClient(app)
+
+@pytest.fixture(scope="function")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac

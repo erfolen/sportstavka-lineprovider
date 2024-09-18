@@ -3,12 +3,15 @@ services:
   db_line-provider:
     image: postgres:13.8
     container_name: db_line-provider
-    environment:
-      POSTGRES_HOST: db_line-provider
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_HOST: ${DB_HOST}
     ports:
-      - ${POSTGRES_PORT}:5432
+      - "${DB_PORT}:5432"
     volumes:
       - ./pgdata_lp:/var/lib/postgresql/data
     healthcheck:
@@ -25,14 +28,17 @@ services:
   test-database:
     image: postgres:13.8
     container_name: test-database_lp
-    environment:
-      POSTGRES_HOST: test-database_lp
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: ${DB_TEST_USER}
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
+      POSTGRES_DB: ${DB_TEST_NAME}
+      POSTGRES_HOST: ${POSTGRES_TEST_HOST}
     ports:
-      - "${TEST_POSTGRES_PORT}:5433"
+      - "${DB_TEST_PORT}:5432"
     volumes:
-      - ./pgdata_test_lp:/var/lib/postgresql/data  # Том для тестовой базы
+      - ./pgdata_tst_lp:/var/lib/postgresql/data  # Том для тестовой базы
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d ${TEST_POSTGRES_DB} -U ${TEST_POSTGRES_USER}" ]
       interval: 10s

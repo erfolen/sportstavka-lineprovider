@@ -4,10 +4,10 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-login = os.getenv("POSTGRES_USER")
-password = os.getenv("POSTGRES_PASSWORD")
-database = os.getenv("POSTGRES_DB")
-port = os.getenv("POSTGRES_PORT")
+login = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+database = os.getenv("DB_NAME")
+port = os.getenv("DB_PORT")
 
 
 def data_base_url():
@@ -17,10 +17,10 @@ def data_base_url():
 
 
 #Тестовое окружение
-test_login = os.getenv("TEST_POSTGRES_USER")
-test_password = os.getenv("TEST_POSTGRES_PASSWORD")
-test_database = os.getenv("TEST_POSTGRES_DB")
-test_port = os.getenv("TEST_POSTGRES_PORT")
+test_login = os.getenv("DB_TEST_USER")
+test_password = os.getenv("DB_TEST_PASSWORD")
+test_database = os.getenv("DB_TEST_NAME")
+test_port = os.getenv("DB_TEST_PORT")
 
 
 def data_test_base_url():

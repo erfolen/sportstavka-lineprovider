@@ -44,7 +44,8 @@ class EventDal:
             query = select(EventBD)
             result = await session.execute(query)
             events_bd = result.scalars().all()
-            return [SEvent.model_validate(event_bd) for event_bd in events_bd]
+            return [SEvent.model_validate(event_bd, from_attributes=True) for event_bd in
+                    events_bd]
 
     @classmethod
     async def change_state(cls, data: SEventState) -> SEvent | None:
@@ -61,6 +62,6 @@ class EventDal:
 
                 query = select(EventBD).where(EventBD.event_id == event_id)
                 result = await session.execute(query)
-                return SEvent.model_validate(result.scalars().first())
+                return SEvent.model_validate(result.scalars().first(), from_attributes=True)
             else:
                 return None

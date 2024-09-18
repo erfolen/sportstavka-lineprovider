@@ -10,6 +10,7 @@ venv
 .venv
 pgdata_lp/
 pgdata_test_lp/
+pgdata_tst_lp/
 
 # Temp folders
 .pytest_cache
