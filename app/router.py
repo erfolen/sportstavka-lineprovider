@@ -55,9 +55,9 @@ Depends(get_async_session)) -> dict:
     """Обновление состояния события по id"""
     event = await EventDal.change_state(event_state, session)
     if event is not None:
-        return {"status": 200, "data": "Статус был обновлен",
+        return {"status": 200, "detail": "Статус был обновлен",
                 **event.model_dump()}
     else:
         return {"status": 404,
-                "data": f"Событие c id={event_state.event_id} не "
-                        f"найдено"}
+                "detail": f"Событие c id={event_state.event_id} не "
+                          f"найдено"}
