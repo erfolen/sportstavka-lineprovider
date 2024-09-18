@@ -1,49 +1,56 @@
-"""Fixtures for DAL functions test."""
-# STDLIB
+"""Настройки тестового окружения."""
 import asyncio
-import os
+from typing import AsyncGenerator
 
-# THIRDPARTY
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine
-)
-from sqlalchemy.pool import NullPool
+from httpx import AsyncClient
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import (create_async_engine, async_sessionmaker,
+                                    AsyncSession)
 
-# FIRSTPARTY
-from app.model import Base
-from app.model import EventBD  # NOQA
-from config import
+from config import data_test_base_url
+from app.model import EventBD  # noqa
+from app.main import app
+from app.database import async_session_fabric, Base
 
+# DATABASE
+async_test_engine = create_async_engine(data_test_base_url(), future=True,
+                                        echo=True)
+async_test_session_fabric = async_sessionmaker(async_test_engine,
+                                               class_=AsyncSession,
+                                               expire_on_commit=False)
 
-engine_test = create_async_engine(test_db_async_url, poolclass=NullPool)
-async_session = async_sessionmaker(
-        engine_test, expire_on_commit=False, class_=AsyncSession
-    )
-
-
-@pytest.fixture(scope='session')
-def engine() -> None:
-    """Make Async Engine for test."""
-    yield engine_test
-    engine_test.sync_engine.dispose()
+Base.metadata.bind = async_test_engine
 
 
-@pytest.fixture(scope='session')
-def prepare_database() -> None:
-    """Create Tables via our metadata in TEST DB and drop them after tests."""
-    sync_engine_test = create_engine(test_db_sync_url, echo=True)
-    BaseModel.metadata.create_all(bind=sync_engine_test)
-    yield
-    BaseModel.metadata.drop_all(bind=sync_engine_test)
+async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_test_session_fabric() as session:
+        yield session
 
 
-@pytest.fixture(scope='session')
-def event_loop() -> None:
-    """Make Event Loop for tests."""
+app.dependency_overrides[async_session_fabric] = override_get_async_session
+
+
+@pytest.fixture(autouse=True, scope='session')
+async def db_session():
+    async with async_test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield async_test_session_fabric()
+    # async with async_test_engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all(bind=async_test_engine))
+
+
+# SETUP
+@pytest.fixture(scope='function')
+def event_loop(request):
+    """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
+
+# client = TestClient(app)
+
+@pytest.fixture(scope="function")
+async def ac() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac
