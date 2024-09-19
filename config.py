@@ -30,5 +30,8 @@ def data_test_base_url():
 
 def sync_test_base_url():
     """Connect test_database."""
-    return (f'postgresql+asyncpg://{test_login}:{test_password}@localhost:{test_port}'
+    return (f'postgresql://{test_login}:{test_password}@localhost'
+            f':{test_port}'
             f'/{test_database}')
+
+# postgresql+pg8000

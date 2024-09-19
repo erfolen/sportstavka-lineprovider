@@ -12,10 +12,10 @@ class SEvent(BaseModel):
     deadline: datetime
     state: StatusEvent
 
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
 
-    # model_config = ConfigDict(orm_mode=True)
+    model_config = ConfigDict(from_attributes=True)
 
 class SEventState(BaseModel):
     event_id: str
