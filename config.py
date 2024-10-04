@@ -8,12 +8,13 @@ login = os.getenv("DB_USER")
 password = os.getenv("DB_PASSWORD")
 database = os.getenv("DB_NAME")
 port = os.getenv("DB_PORT")
+host = os.getenv("DB_HOST")
 
 
 def data_base_url():
     """Connect database."""
-    return (f'postgresql+asyncpg://{login}:{password}@localhost:{port}'
-            f'/{database}')
+    return (f'postgresql+asyncpg://{login}:{password}@{host}:5432/'
+            f'{database}')
 
 
 #Тестовое окружение
@@ -35,3 +36,4 @@ def sync_test_base_url():
             f'/{test_database}')
 
 # postgresql+pg8000
+print(data_base_url())

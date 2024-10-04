@@ -1,0 +1,9 @@
+.gitlab
+.venv
+DockerVolumes
+tests
+.flake8
+.isort.cfg
+.pre-commit-config.yaml
+pytest.ini
+README.md

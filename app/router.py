@@ -49,9 +49,9 @@ async def get_events(session: AsyncSession = Depends(get_async_session)) -> (
 
 
 @router.patch('/event')
-async def change_state(event_state: Annotated[SEventState, Depends()], session:
-AsyncSession =
-Depends(get_async_session)) -> dict:
+async def change_state(event_state: Annotated[SEventState, Depends()],
+                       session: AsyncSession = Depends(get_async_session)
+                       ) -> dict:
     """Обновление состояния события по id"""
     event = await EventDal.change_state(event_state, session)
     if event is not None:

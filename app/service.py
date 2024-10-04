@@ -20,7 +20,7 @@ class EventDal:
         session.add(event)
         await  session.flush()
         await session.commit()
-        return event.event_id
+        return data.event_id
 
     @classmethod
     async def check_event_id(cls, event_id: str,
@@ -51,7 +51,7 @@ class EventDal:
                            session: AsyncSession) -> SEvent | None:
         """Изменения события."""
         event_id, new_state = data.model_dump().values()
-        if await cls.check_event_id(event_id):
+        if await cls.check_event_id(event_id, session):
             await session.execute(
                 update(EventBD)
                 .where(EventBD.event_id == event_id)

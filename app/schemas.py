@@ -12,10 +12,17 @@ class SEvent(BaseModel):
     deadline: datetime
     state: StatusEvent
 
-    # class Config:
-    #     from_attributes = True
-
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "event_id": "abc123",
+                "coefficient": "1.25",
+                "deadline": "2024-12-31T23:59:59",
+                "state": "active"
+            }
+        }
+    )
 
 class SEventState(BaseModel):
     event_id: str
